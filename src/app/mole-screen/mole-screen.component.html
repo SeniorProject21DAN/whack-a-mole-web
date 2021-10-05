@@ -1,6 +1,7 @@
 <div class="container">
     <h1 style="text-align: center;">Whack-a-Mole!</h1>
-    <div style="width: 800px; height: 500px; border: 2px solid gray;">
+    <div style="width: 800px; height: 500px; border: 2px solid gray;" 
+    [ngStyle]="whack ? {'background-color': 'red'} : {}">
         <div style="width: 10px; height: 10px; background-color: black; position: absolute;" 
         [ngStyle]="{'margin-left': x, 'margin-top': y}">
     </div>
@@ -8,4 +9,8 @@
 
     X: {{x}}
     Y: {{y}}
+
+    <div style="width: 20px; height: 20px;" [ngStyle]="whack ? {'background-color': 'red'} : {}">
+
+    </div>
 </div>

@@ -12,6 +12,7 @@ export class MoleScreenComponent implements OnInit {
   unsubscribe: Unsubscribe[] = [];
   x: string = "0px";
   y: string = "0px";
+  whack: boolean = false;
 
   constructor() { 
     const firebaseConfig = {
@@ -29,9 +30,14 @@ export class MoleScreenComponent implements OnInit {
 
     this.unsubscribe.push(onSnapshot(doc(db, "MoleGames", "Bongo"), (doc) => {
       console.log(doc.data());
-      let data = doc.data() as {x: number, y: number};
+      let data = doc.data() as {x: number, y: number, whack: boolean};
       this.x = data.x * 800 + "px";
       this.y = data.y * 500 + "px";
+      this.whack = data.whack;
+
+      if(this.whack) {
+        console.log("X: " + this.x + ", Y: " + this.y);
+      }
     }))
   }
 
