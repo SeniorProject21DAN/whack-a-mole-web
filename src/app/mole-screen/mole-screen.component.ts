@@ -13,6 +13,7 @@ export class MoleScreenComponent implements OnInit {
   x: string = "0px";
   y: string = "0px";
   whack: boolean = false;
+  moles: boolean[] = [false, false, false, false, false, false];
 
   constructor() { 
     const firebaseConfig = {
@@ -37,6 +38,11 @@ export class MoleScreenComponent implements OnInit {
 
       if(this.whack) {
         console.log("X: " + this.x + ", Y: " + this.y);
+      }
+
+      //50% chance for mole to spawn
+      if(Math.random() > 0.5) {
+        this.moles[Math.floor(Math.random() * this.moles.length)] = true;
       }
     }))
   }

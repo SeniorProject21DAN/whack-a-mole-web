@@ -2,8 +2,27 @@
     <h1 style="text-align: center;">Whack-a-Mole!</h1>
     <div style="width: 800px; height: 500px; border: 2px solid gray;" 
     [ngStyle]="whack ? {'background-color': 'red'} : {}">
-        <div style="width: 10px; height: 10px; background-color: black; position: absolute;" 
-        [ngStyle]="{'margin-left': x, 'margin-top': y}">
+        <div class="mole" style="left: 100px; top: 50px;">
+            o o
+        </div>
+        <div class="mole" style="left: 250px; top: 50px;">
+            o o
+        </div>
+        <div class="mole" style="left: 400px; top: 50px;">
+            o o
+        </div>
+        <div class="mole" style="left: -200px; top: 300px;">
+            o o
+        </div>
+        <div class="mole" style="left: -50px; top: 300px;">
+            o o
+        </div>
+        <div class="mole" style="left: 100px; top: 300px;">
+            o o
+        </div>
+
+        <div style="width: 10px; height: 10px; background-color: black; position: absolute;"
+        [ngStyle]="{'left': 'calc(' + x + ' + ((100vw - 800px)/2))', 'top': 'calc(110px + ' + y + ')'}">
     </div>
     </div>
 
