@@ -1,23 +1,22 @@
 <div class="container">
     <h1 style="text-align: center;">Whack-a-Mole!</h1>
-    <div style="width: 800px; height: 500px; border: 2px solid gray;" 
-    [ngStyle]="whack ? {'background-color': 'red'} : {}">
-        <div class="mole" style="left: 100px; top: 50px;">
+    <div style="width: 800px; height: 500px; border: 2px solid gray;"> <!-- [ngStyle]="whack ? {'background-color': 'red'} : {}"-->
+        <div class="mole" style="left: 100px; top: 50px;" [ngStyle]="moles[0] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
-        <div class="mole" style="left: 250px; top: 50px;">
+        <div class="mole" style="left: 250px; top: 50px;" [ngStyle]="moles[1] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
-        <div class="mole" style="left: 400px; top: 50px;">
+        <div class="mole" style="left: 400px; top: 50px;" [ngStyle]="moles[2] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
-        <div class="mole" style="left: -200px; top: 300px;">
+        <div class="mole" style="left: -200px; top: 300px;" [ngStyle]="moles[3] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
-        <div class="mole" style="left: -50px; top: 300px;">
+        <div class="mole" style="left: -50px; top: 300px;" [ngStyle]="moles[4] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
-        <div class="mole" style="left: 100px; top: 300px;">
+        <div class="mole" style="left: 100px; top: 300px;" [ngStyle]="moles[5] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
 
@@ -29,7 +28,5 @@
     X: {{x}}
     Y: {{y}}
 
-    <div style="width: 20px; height: 20px;" [ngStyle]="whack ? {'background-color': 'red'} : {}">
-
-    </div>
+    <h1>Score: {{score}}</h1>
 </div>
