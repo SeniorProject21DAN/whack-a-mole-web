@@ -1,6 +1,7 @@
 <div class="container">
     <h1 style="text-align: center;">Whack-a-Mole!</h1>
-    <div style="width: 800px; height: 500px; border: 2px solid gray;"> <!-- [ngStyle]="whack ? {'background-color': 'red'} : {}"-->
+    <div style="width: 800px; height: 500px; border: 2px solid gray;">
+        <!-- [ngStyle]="whack ? {'background-color': 'red'} : {}"-->
         <div class="mole" style="left: 100px; top: 50px;" [ngStyle]="moles[0] ? {} : {'visibility': 'hidden'}">
             o o
         </div>
@@ -20,13 +21,20 @@
             o o
         </div>
 
-        <div style="width: 10px; height: 10px; background-color: black; position: absolute;"
-        [ngStyle]="{'left': 'calc(' + x + ' + ((100vw - 800px)/2))', 'top': 'calc(110px + ' + y + ')'}">
-    </div>
+        <ng-container *ngFor="let player of players; index as p">
+            <div style="width: 10px; height: 10px; position: absolute; z-index: 999999;"
+                [ngStyle]="{'left': 'calc(' + player.xpx + ' + ((100vw - 800px)/2))', 'top': 'calc(110px + ' + player.ypx + ')', 'background-color': colors[p]}">
+            </div>
+        </ng-container>
     </div>
 
-    X: {{x}}
-    Y: {{y}}
+    <!-- X: {{x}}
+    Y: {{y}} -->
 
-    <h1>Score: {{score}}</h1>
+    <h1>Scores:</h1>
+    <ng-container *ngFor="let player of players; index as p">
+        <span [ngStyle]="{'color': colors[p]}">
+            {{player.name}}: {{player.score}}&nbsp;&nbsp;&nbsp;&nbsp;
+        </span>
+    </ng-container>
 </div>
