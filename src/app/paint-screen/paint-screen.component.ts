@@ -15,6 +15,7 @@ export class PaintScreenComponent implements OnInit {
   players: Player[] = [];
 
   constructor() { 
+    //Create a grid of white tiles based on the screen size
     let temparray: string[] = [];
     for(let i = 0; i < Math.floor(window.innerWidth/40); ++i) {
       temparray.push("white");
@@ -34,6 +35,7 @@ export class PaintScreenComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  //Calculates where to move the player's cursor to
   moveCursor(x: number, y:number, playernum: number): void {
     let xcoord: number = Math.floor(this.squares[0].length * x);
     let ycoord: number = Math.floor(this.squares.length * y);
@@ -58,6 +60,7 @@ export class PaintScreenComponent implements OnInit {
     this.paintSquare(xdest, ydest, playernum);
   }
 
+  //Paints the square with the player's color
   paintSquare(x: number, y:number, playernum: number): void {
     this.squares[y][x] = this.headcolors[playernum];
 
