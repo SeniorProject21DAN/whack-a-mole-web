@@ -4,7 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "public",
+    "public": "dist/whack-a-mole-web",
     "ignore": [
       "firebase.json",
       "**/.*",
