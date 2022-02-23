@@ -9,7 +9,7 @@ export class PaintScreenComponent implements OnInit {
 
   squares: string[][] = []; //each string tells the color of the square
 
-  colors: string[] = ["red", "green", "cyan", "yellow"];
+  colors: string[] = ["red", "lime", "cyan", "yellow"];
   headcolors: string[] = ["darkred", "darkgreen", "darkcyan", "gold"]
 
   players: Player[] = [];
@@ -21,14 +21,16 @@ export class PaintScreenComponent implements OnInit {
       temparray.push("white");
     }
 
-    for(let i = 0; i < Math.floor((window.innerHeight - (window.innerHeight * .1))/40); ++i) {
+    for(let i = 0; i < Math.floor((window.innerHeight - 50)/40); ++i) {
       this.squares.push([...temparray]);
     }
 
     this.players.push({xlast: 10, ylast: 5, name: "Bongo"});
+    this.players.push({xlast: 5, ylast: 10, name: "Banjo"});
 
     let t=setInterval(() => {
       this.moveCursor(Math.random(), Math.random(), 0);
+      this.moveCursor(Math.random(), Math.random(), 1);
     },100);
   }
 
