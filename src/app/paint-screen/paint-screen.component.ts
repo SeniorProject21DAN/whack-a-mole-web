@@ -25,8 +25,8 @@ export class PaintScreenComponent implements OnInit {
       this.squares.push([...temparray]);
     }
 
-    this.players.push({xlast: 10, ylast: 5, name: "Bongo"});
-    this.players.push({xlast: 5, ylast: 10, name: "Banjo"});
+    this.players.push({xlast: 5, ylast: 5, name: "Bongo"});
+    this.players.push({xlast: 4, ylast: 4, name: "Banjo"});
 
     let t=setInterval(() => {
       this.moveCursor(Math.random(), Math.random(), 0);
