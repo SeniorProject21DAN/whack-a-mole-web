@@ -14,53 +14,53 @@ export class PaintScreenComponent implements OnInit {
 
   players: Player[] = [];
 
-  constructor() { 
+  constructor() {
     //Create a grid of white tiles based on the screen size
     let temparray: string[] = [];
-    for(let i = 0; i < Math.floor(window.innerWidth/40); ++i) {
+    for (let i = 0; i < Math.floor(window.innerWidth / 40); ++i) {
       temparray.push("white");
     }
 
-    for(let i = 0; i < Math.floor((window.innerHeight - 50)/40); ++i) {
+    for (let i = 0; i < Math.floor((window.innerHeight - 75) / 40); ++i) {
       this.squares.push([...temparray]);
     }
 
-    this.players.push({xlast: 5, ylast: 5, name: "Bongo"});
-    this.players.push({xlast: 4, ylast: 4, name: "Banjo"});
-    this.players.push({xlast: 3, ylast: 3, name: "Banjo"});
-    this.players.push({xlast: 2, ylast: 2, name: "Banjo"});
+    this.players.push({ xlast: 0, ylast: 0, name: "Bongo" });
+    this.players.push({ xlast: 0, ylast: this.squares.length - 1, name: "Banjo" });
+    this.players.push({ xlast: this.squares[0].length - 1, ylast: 0, name: "Banjo" });
+    this.players.push({ xlast: this.squares[0].length - 1, ylast: this.squares.length - 1, name: "Banjo" });
 
 
-    let t=setInterval(() => {
+    let t = setInterval(() => {
       this.moveCursor(Math.random(), Math.random(), 0);
       this.moveCursor(Math.random(), Math.random(), 1);
       this.moveCursor(Math.random(), Math.random(), 2);
       this.moveCursor(Math.random(), Math.random(), 3);
-    },100);
+    }, 100);
   }
 
   ngOnInit(): void {
   }
 
   //Calculates where to move the player's cursor to
-  moveCursor(x: number, y:number, playernum: number): void {
+  moveCursor(x: number, y: number, playernum: number): void {
     let xcoord: number = Math.floor(this.squares[0].length * x);
     let ycoord: number = Math.floor(this.squares.length * y);
 
     let xdest = this.players[playernum].xlast;
     let ydest = this.players[playernum].ylast;
 
-    if(xcoord > this.players[playernum].xlast) {
+    if (xcoord > this.players[playernum].xlast) {
       xdest = this.players[playernum].xlast + 1;
     }
-    else if(xcoord < this.players[playernum].xlast) {
+    else if (xcoord < this.players[playernum].xlast) {
       xdest = this.players[playernum].xlast - 1;
     }
 
-    if(ycoord > this.players[playernum].ylast) {
+    if (ycoord > this.players[playernum].ylast) {
       ydest = this.players[playernum].ylast + 1;
     }
-    else if(ycoord < this.players[playernum].ylast) {
+    else if (ycoord < this.players[playernum].ylast) {
       ydest = this.players[playernum].ylast - 1;
     }
 
@@ -68,10 +68,11 @@ export class PaintScreenComponent implements OnInit {
   }
 
   //Paints the square with the player's color
-  paintSquare(x: number, y:number, playernum: number): void {
+  paintSquare(x: number, y: number, playernum: number): void {
     this.squares[y][x] = this.headcolors[playernum];
 
-    if(this.squares[this.players[playernum].ylast][this.players[playernum].xlast] == this.headcolors[playernum]) {
+    if (this.squares[this.players[playernum].ylast][this.players[playernum].xlast] == this.headcolors[playernum]
+      || this.squares[this.players[playernum].ylast][this.players[playernum].xlast] == "white") {
       this.squares[this.players[playernum].ylast][this.players[playernum].xlast] = this.colors[playernum];
     }
 
