@@ -14,6 +14,12 @@ export class PaintScreenComponent implements OnInit {
 
   players: Player[] = [];
 
+  pctWhite: number = 100;
+
+  ws: WebSocket;
+
+  startIndexes: BoardIndex[] = [];
+
   constructor() {
     //Create a grid of white tiles based on the screen size
     let temparray: string[] = [];
@@ -25,18 +31,69 @@ export class PaintScreenComponent implements OnInit {
       this.squares.push([...temparray]);
     }
 
-    this.players.push({ xlast: 0, ylast: 0, name: "Bongo" });
-    this.players.push({ xlast: 0, ylast: this.squares.length - 1, name: "Banjo" });
-    this.players.push({ xlast: this.squares[0].length - 1, ylast: 0, name: "Banjo" });
-    this.players.push({ xlast: this.squares[0].length - 1, ylast: this.squares.length - 1, name: "Banjo" });
+    this.startIndexes.push({x: 0, y: 0});
+    this.startIndexes.push({x: this.squares[0].length - 1, y: this.squares.length - 1});
+    this.startIndexes.push({x: this.squares[0].length - 1, y: 0});
+    this.startIndexes.push({x: 0, y: this.squares.length - 1});
+    
+
+    // this.players.push({ xlast: 0, ylast: 0, name: "Bongo" });
+    // this.players.push({ xlast: 0, ylast: this.squares.length - 1, name: "Banjo" });
+    // this.players.push({ xlast: this.squares[0].length - 1, ylast: 0, name: "Banjo" });
+    // this.players.push({ xlast: this.squares[0].length - 1, ylast: this.squares.length - 1, name: "Banjo" });
 
 
-    let t = setInterval(() => {
-      this.moveCursor(Math.random(), Math.random(), 0);
-      this.moveCursor(Math.random(), Math.random(), 1);
-      this.moveCursor(Math.random(), Math.random(), 2);
-      this.moveCursor(Math.random(), Math.random(), 3);
-    }, 100);
+    // let t = setInterval(() => {
+    //   this.moveCursor(Math.random(), Math.random(), 0);
+    //   this.moveCursor(Math.random(), Math.random(), 1);
+    //   this.moveCursor(Math.random(), Math.random(), 2);
+    //   this.moveCursor(Math.random(), Math.random(), 3);
+    //   let numWhite = 0;
+    //   for (let i = 0; i < this.squares.length; ++i) {
+    //     for (let j = 0; j < this.squares[i].length; ++j) {
+    //       if (this.squares[i][j] == "white") {
+    //         numWhite++;
+    //       }
+    //     }
+    //   }
+
+    //   this.pctWhite = numWhite / (this.squares.length * this.squares[0].length) * 100
+    // }, 10);
+
+    this.ws = new WebSocket('ws://153.106.93.160:8080');
+
+    this.ws.onopen = () => {
+      console.log("Test");
+      this.ws.send("s:s:baker");
+      // setServerState('Connected to the server')
+      // setDisableButton(false);
+    };
+    this.ws.onclose = (e: CloseEvent) => {
+      // setServerState('Disconnected. Check internet or server.')
+      // setDisableButton(true);
+      console.log(e);
+    };
+    this.ws.onerror = (e: Event) => {
+      console.log(e);
+      // setServerState(e.message);
+    };
+    this.ws.onmessage = (e: MessageEvent<any>) => {
+      console.log(e);
+      if(e.data.split(":").length > 1) {
+        let playerNum = this.players.map(function(player) { return player.name; }).indexOf(e.data.split(":")[0]);
+        if(playerNum !== -1) {
+          this.moveCursor(Number.parseFloat(e.data.split(":")[2].split(",")[0]), Number.parseFloat(e.data.split(":")[2].split(",")[1]), playerNum);
+        }
+        else {
+          this.players.push({
+            xlast: this.startIndexes[this.players.length].x,
+            ylast: this.startIndexes[this.players.length].y,
+            name: e.data.split(":")[0]
+          })
+          this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
+        }
+      }
+    };
   }
 
   ngOnInit(): void {
@@ -88,6 +145,7 @@ interface Player {
   name: string
 }
 
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
+interface BoardIndex {
+  x: number,
+  y: number
 }
