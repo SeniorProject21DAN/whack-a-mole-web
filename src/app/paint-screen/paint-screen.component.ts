@@ -60,11 +60,11 @@ export class PaintScreenComponent implements OnInit {
     //   this.pctWhite = numWhite / (this.squares.length * this.squares[0].length) * 100
     // }, 10);
 
-    this.ws = new WebSocket('ws://153.106.93.160:8080');
+    this.ws = new WebSocket('ws://192.168.1.15:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
-      this.ws.send("s:s:baker");
+      this.ws.send("s:h:baker:screen");
       // setServerState('Connected to the server')
       // setDisableButton(false);
     };
@@ -107,17 +107,17 @@ export class PaintScreenComponent implements OnInit {
     let xdest = this.players[playernum].xlast;
     let ydest = this.players[playernum].ylast;
 
-    if (xcoord > this.players[playernum].xlast) {
+    if (xcoord > this.players[playernum].xlast && this.players[playernum].xlast + 1 < this.squares[0].length) {
       xdest = this.players[playernum].xlast + 1;
     }
-    else if (xcoord < this.players[playernum].xlast) {
+    else if (xcoord < this.players[playernum].xlast && this.players[playernum].xlast - 1 >= 0) {
       xdest = this.players[playernum].xlast - 1;
     }
 
-    if (ycoord > this.players[playernum].ylast) {
+    if (ycoord > this.players[playernum].ylast && this.players[playernum].ylast + 1 < this.squares.length) {
       ydest = this.players[playernum].ylast + 1;
     }
-    else if (ycoord < this.players[playernum].ylast) {
+    else if (ycoord < this.players[playernum].ylast && this.players[playernum].ylast - 1 >= 0) {
       ydest = this.players[playernum].ylast - 1;
     }
 
