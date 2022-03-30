@@ -1,5 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
+const LENGTH = 5; // Length of the Room ID
+
+const generateID = () => {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < LENGTH; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 @Component({
   selector: 'app-paint-screen',
   templateUrl: './paint-screen.component.html',
@@ -19,6 +31,8 @@ export class PaintScreenComponent implements OnInit {
   ws: WebSocket;
 
   startIndexes: BoardIndex[] = [];
+
+  roomId: string = "";
 
   constructor() {
     //Create a grid of white tiles based on the screen size
@@ -60,11 +74,13 @@ export class PaintScreenComponent implements OnInit {
     //   this.pctWhite = numWhite / (this.squares.length * this.squares[0].length) * 100
     // }, 10);
 
-    this.ws = new WebSocket('ws://192.168.1.15:8080');
+    this.roomId = generateID();
+
+    this.ws = new WebSocket('ws://153.106.80.52:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
-      this.ws.send("s:h:baker:screen");
+      this.ws.send("s:h:" + this.roomId + ":screen");
       // setServerState('Connected to the server')
       // setDisableButton(false);
     };
@@ -82,18 +98,28 @@ export class PaintScreenComponent implements OnInit {
       if(e.data.split(":").length > 1) {
         let playerNum = this.players.map(function(player) { return player.name; }).indexOf(e.data.split(":")[0]);
         if(playerNum !== -1) {
-          this.moveCursor(Number.parseFloat(e.data.split(":")[2].split(",")[0]), Number.parseFloat(e.data.split(":")[2].split(",")[1]), playerNum);
+          this.players[playerNum].xcusor = Number.parseFloat(e.data.split(":")[2].split(",")[0])
+          this.players[playerNum].ycursor = Number.parseFloat(e.data.split(":")[2].split(",")[1]);
+          //this.moveCursor(Number.parseFloat(e.data.split(":")[2].split(",")[0]), Number.parseFloat(e.data.split(":")[2].split(",")[1]), playerNum);
         }
         else {
           this.players.push({
             xlast: this.startIndexes[this.players.length].x,
             ylast: this.startIndexes[this.players.length].y,
-            name: e.data.split(":")[0]
+            name: e.data.split(":")[0],
+            xcusor: this.startIndexes[this.players.length].x,
+            ycursor: this.startIndexes[this.players.length].y
           })
-          this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
+          //this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
         }
       }
     };
+
+    setInterval(() => {
+      for(let i = 0; i < this.players.length; ++i) {
+        this.moveCursor(this.players[i].xcusor, this.players[i].ycursor, i);
+      }
+    }, 100)
   }
 
   ngOnInit(): void {
@@ -143,6 +169,8 @@ interface Player {
   xlast: number,
   ylast: number,
   name: string
+  xcusor: number,
+  ycursor: number
 }
 
 interface BoardIndex {
