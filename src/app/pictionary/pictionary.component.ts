@@ -30,12 +30,17 @@ export class PictionaryComponent implements AfterViewInit {
   @ViewChild('myCanvas') canvasRef?: ElementRef;
 
   players: string[] = [];
-  artist: string = "";
+  artist: number = 0; //index of artist
+  word: string = "";
 
   drawing: boolean = false;
 
   cursorX: string = "0px";
   cursorY: string = "0px";
+
+  gameStarted: boolean = false;
+
+  words: string[] = ["horse, school, house, monkey, calvin, ocean, television"]
 
   constructor() {
 
@@ -63,27 +68,27 @@ export class PictionaryComponent implements AfterViewInit {
     };
     this.ws.onmessage = (e: MessageEvent<any>) => {
       console.log(e);
-      if (e.data.split(":").length > 1) {
+      if (e.data.split(":").length > 1 && e.data.split(":")[1] !== "p") {
         console.log(e.data)
         let playerNum = this.players.indexOf(e.data.split(":")[0]);
-        if(playerNum !== -1) {
+        if (playerNum !== -1) {
           //this.players[playerNum].xcusor = Number.parseFloat(e.data.split(":")[2].split(",")[0])
           //this.players[playerNum].ycursor = Number.parseFloat(e.data.split(":")[2].split(",")[1]);
           //this.moveCursor(Number.parseFloat(e.data.split(":")[2].split(",")[0]), Number.parseFloat(e.data.split(":")[2].split(",")[1]), playerNum);
         }
         else {
           this.players.push(e.data.split(":")[0])
-        //this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
+          //this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
         }
 
-        if(this.ctx) {
+        if (this.ctx) {
           let x: number = e.data.split(":")[2].split(",")[0] * this.canvasWidth;
           let y: number = e.data.split(":")[2].split(",")[1] * this.canvasHeight
           this.cursorX = (x + 10) + "px";
           this.cursorY = (y + 10) + "px";
 
-          if(e.data.split(":")[3] === "true") {
-            if(this.drawing) {
+          if (e.data.split(":")[3] === "true") {
+            if (this.drawing) {
               this.ctx.lineTo(x, y);
             }
             else {
@@ -94,6 +99,18 @@ export class PictionaryComponent implements AfterViewInit {
           }
           else {
             this.drawing = false;
+          }
+        }
+      }
+      else if (e.data.split(":")[1] === "p") {
+        if (e.data.split(":")[2] = "start") {
+          if (!this.gameStarted && this.players.length >= 2) {
+            this.gameStarted = true;
+            this.word = this.words[getRandomInt(this.words.length)];
+            for(let i = 0; i < this.players.length; ++i) {
+              this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":artist=" + this.players[this.artist]);
+            }
+            this.ws.send("p:h:" + this.roomId + ":host:" + this.players[this.artist] + ":word=" + this.word);
           }
         }
       }
@@ -109,10 +126,10 @@ export class PictionaryComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
-    if(this.canvas) {
+    if (this.canvas) {
       console.log("Hello")
       this.ctx = this.canvas.getContext("2d");
-      if(this.ctx) {
+      if (this.ctx) {
         this.ctx.canvas.width = this.canvasWidth;
         this.ctx.canvas.height = this.canvasHeight;
         this.ctx.lineWidth = 10;
@@ -121,4 +138,11 @@ export class PictionaryComponent implements AfterViewInit {
     }
   }
 
+  sendMessage() {
+    this.ws.send("p:h:" + this.roomId + ":host:Bongo:word=horse")
+  }
+}
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
 }
