@@ -40,7 +40,7 @@ export class PictionaryComponent implements AfterViewInit {
 
   gameStarted: boolean = false;
 
-  words: string[] = ["horse, school, house, monkey, calvin, ocean, television"]
+  words: string[] = ["horse", "school", "house", "monkey", "calvin", "ocean", "television"]
 
   constructor() {
 
@@ -49,7 +49,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.canvasWidth = Math.floor(screen.availWidth / 1.5);
     this.canvasHeight = Math.floor(screen.availWidth / 3);
 
-    this.ws = new WebSocket('ws://192.168.1.15:8080');
+    this.ws = new WebSocket('ws://153.106.90.99:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
@@ -69,7 +69,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.ws.onmessage = (e: MessageEvent<any>) => {
       console.log(e);
       if (e.data.split(":").length > 1 && e.data.split(":")[1] !== "p") {
-        console.log(e.data)
+        //console.log(e.data)
         let playerNum = this.players.indexOf(e.data.split(":")[0]);
         if (playerNum !== -1) {
           //this.players[playerNum].xcusor = Number.parseFloat(e.data.split(":")[2].split(",")[0])
@@ -103,14 +103,18 @@ export class PictionaryComponent implements AfterViewInit {
         }
       }
       else if (e.data.split(":")[1] === "p") {
+        console.log(this.players);
         if (e.data.split(":")[2] = "start") {
-          if (!this.gameStarted && this.players.length >= 2) {
+          console.log("Starting Game");
+          if (!this.gameStarted && this.players.length >= 1) {
             this.gameStarted = true;
             this.word = this.words[getRandomInt(this.words.length)];
             for(let i = 0; i < this.players.length; ++i) {
               this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":artist=" + this.players[this.artist]);
+              this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":start=")
             }
             this.ws.send("p:h:" + this.roomId + ":host:" + this.players[this.artist] + ":word=" + this.word);
+            console.log("Hello there")
           }
         }
       }
