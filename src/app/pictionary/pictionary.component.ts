@@ -24,6 +24,7 @@ export class PictionaryComponent implements AfterViewInit {
 
   canvas: HTMLCanvasElement | null = null;
   ctx: CanvasRenderingContext2D | null = null;
+  eraserCtx: CanvasRenderingContext2D | null = null;
   canvasWidth: number = 100;
   canvasHeight: number = 100;
 
@@ -49,7 +50,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.canvasWidth = Math.floor(screen.availWidth / 1.5);
     this.canvasHeight = Math.floor(screen.availWidth / 3);
 
-    this.ws = new WebSocket('ws://153.106.90.99:8080');
+    this.ws = new WebSocket('ws://192.168.1.15:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
@@ -109,7 +110,7 @@ export class PictionaryComponent implements AfterViewInit {
           if (!this.gameStarted && this.players.length >= 1) {
             this.gameStarted = true;
             this.word = this.words[getRandomInt(this.words.length)];
-            for(let i = 0; i < this.players.length; ++i) {
+            for (let i = 0; i < this.players.length; ++i) {
               this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":artist=" + this.players[this.artist]);
               this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":start=")
             }
@@ -137,6 +138,19 @@ export class PictionaryComponent implements AfterViewInit {
         this.ctx.canvas.width = this.canvasWidth;
         this.ctx.canvas.height = this.canvasHeight;
         this.ctx.lineWidth = 10;
+        this.ctx.stroke();
+      }
+
+      if (this.ctx) {
+        this.ctx.moveTo(10,10);
+        this.ctx.lineTo(60,60);
+        this.ctx.stroke();
+      }
+      if (this.ctx) {
+        this.ctx.strokeStyle = "#FF0000";
+        this.ctx.beginPath();
+        this.ctx.moveTo(10,60);
+        this.ctx.lineTo(60,10);
         this.ctx.stroke();
       }
     }
