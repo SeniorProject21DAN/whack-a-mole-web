@@ -5,7 +5,11 @@
 
     </canvas>
     <div style="position: absolute; width: 10px; height: 10px; background-color: red;"
-    [ngStyle]="{'top': cursorY, 'left': cursorX}">
+    [ngStyle]="{'top': artistCursorY, 'left': artistCursorX}">
+
+    </div>
+    <div style="position: absolute; width: 10px; height: 10px; background-color: blue;"
+    [ngStyle]="{'top': eraserCursorY, 'left': eraserCursorX}">
 
     </div>
 </div>

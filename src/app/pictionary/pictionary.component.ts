@@ -31,13 +31,22 @@ export class PictionaryComponent implements AfterViewInit {
   @ViewChild('myCanvas') canvasRef?: ElementRef;
 
   players: string[] = [];
+  ready: boolean[] = [];
   artist: number = 0; //index of artist
+  eraser: number = 1;
   word: string = "";
 
   drawing: boolean = false;
 
-  cursorX: string = "0px";
-  cursorY: string = "0px";
+  artistCursorX: string = "0px";
+  artistCursorY: string = "0px";
+  eraserCursorX: string = "0px";
+  eraserCursorY: string = "0px";
+
+  artistX: number = 0;
+  artistY: number = 0;
+  eraserX: number = 0;
+  eraserY: number = 0;
 
   gameStarted: boolean = false;
 
@@ -69,24 +78,63 @@ export class PictionaryComponent implements AfterViewInit {
     };
     this.ws.onmessage = (e: MessageEvent<any>) => {
       console.log(e);
-      if (e.data.split(":").length > 1 && e.data.split(":")[1] !== "p") {
-        //console.log(e.data)
-        let playerNum = this.players.indexOf(e.data.split(":")[0]);
-        if (playerNum !== -1) {
-          //this.players[playerNum].xcusor = Number.parseFloat(e.data.split(":")[2].split(",")[0])
-          //this.players[playerNum].ycursor = Number.parseFloat(e.data.split(":")[2].split(",")[1]);
-          //this.moveCursor(Number.parseFloat(e.data.split(":")[2].split(",")[0]), Number.parseFloat(e.data.split(":")[2].split(",")[1]), playerNum);
+      if (e.data.split(":").length === 2 && e.data.split(":")[1] === "OPEN") {
+        this.players.push(e.data.split(":")[0]);
+        this.ready.push(false);
+        if (this.gameStarted) {
+          this.ws.send("m:artist=" + this.players[this.artist]);
+          //this.ws.send("m:eraser=" + this.players[this.eraser]);
+          this.ws.send("m:word=" + this.word);
+          this.ws.send("m:start");
         }
-        else {
-          this.players.push(e.data.split(":")[0])
-          //this.moveCursor(this.players[this.players.length - 1].xlast, this.players[this.players.length - 1].ylast, this.players.length - 1);
+      }
+      if (e.data.split(":").length === 3 && e.data.split(":")[2] === "answered") {
+        this.word = this.words[getRandomInt(this.words.length)];
+        this.artist = this.artist + 1 % this.players.length;
+        this.eraser = this.eraser + 1 % this.players.length;
+        this.ws.send("m:artist=" + this.players[this.artist]);
+        //this.ws.send("m:eraser=" + this.players[this.eraser]);
+        this.ws.send("m:word=" + this.word);
+        this.ws.send("m:start");
+      }
+      if (e.data.split(":").length == 3 && e.data.split(":")[2].startsWith("ready")) {
+        let nickname = e.data.split(":")[0];
+
+        this.ready[this.players.indexOf(nickname)] = e.data.split(":")[2].split("=")[1] === "true";
+        console.log(this.ready);
+        if (!this.gameStarted && this.ready.every(r => r)) {
+          console.log("Starting Game");
+          this.gameStarted = true;
+          this.word = this.words[getRandomInt(this.words.length)];
+          this.ws.send("m:artist=" + this.players[this.artist]);
+          //this.ws.send("m:eraser=" + this.players[this.eraser]);
+          this.ws.send("m:word=" + this.word);
+          this.ws.send("m:start");
+          console.log("Hello there")
         }
 
-        if (this.ctx) {
+      }
+      else if (e.data.split(":").length === 4) {
+        let playerNum = this.players.indexOf(e.data.split(":")[0]);
+
+        if (this.ctx && (this.artist === playerNum || this.eraser === playerNum)) {
           let x: number = e.data.split(":")[2].split(",")[0] * this.canvasWidth;
           let y: number = e.data.split(":")[2].split(",")[1] * this.canvasHeight
-          this.cursorX = (x + 10) + "px";
-          this.cursorY = (y + 10) + "px";
+
+          this.ctx.beginPath();
+
+          if (this.artist === playerNum) {
+            this.artistCursorX = (x + 10) + "px";
+            this.artistCursorY = (y + 10) + "px";
+            this.ctx.moveTo(this.artistX, this.artistY);
+            this.ctx.strokeStyle = "#000000";
+          }
+          else {
+            this.eraserCursorX = (x + 10) + "px";
+            this.eraserCursorY = (y + 10) + "px";
+            this.ctx.moveTo(this.eraserX, this.eraserY);
+            this.ctx.strokeStyle = "#FFFFFF";
+          }
 
           if (e.data.split(":")[3] === "true") {
             if (this.drawing) {
@@ -101,21 +149,14 @@ export class PictionaryComponent implements AfterViewInit {
           else {
             this.drawing = false;
           }
-        }
-      }
-      else if (e.data.split(":")[1] === "p") {
-        console.log(this.players);
-        if (e.data.split(":")[2] = "start") {
-          console.log("Starting Game");
-          if (!this.gameStarted && this.players.length >= 1) {
-            this.gameStarted = true;
-            this.word = this.words[getRandomInt(this.words.length)];
-            for (let i = 0; i < this.players.length; ++i) {
-              this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":artist=" + this.players[this.artist]);
-              this.ws.send("p:h:" + this.roomId + ":host:" + this.players[i] + ":start=")
-            }
-            this.ws.send("p:h:" + this.roomId + ":host:" + this.players[this.artist] + ":word=" + this.word);
-            console.log("Hello there")
+
+          if (this.artist === playerNum) {
+            this.artistX = x;
+            this.artistY = y;
+          }
+          else {
+            this.eraserX = x;
+            this.eraserY = y;
           }
         }
       }
@@ -142,15 +183,15 @@ export class PictionaryComponent implements AfterViewInit {
       }
 
       if (this.ctx) {
-        this.ctx.moveTo(10,10);
-        this.ctx.lineTo(60,60);
+        this.ctx.moveTo(10, 10);
+        this.ctx.lineTo(60, 60);
         this.ctx.stroke();
       }
       if (this.ctx) {
         this.ctx.strokeStyle = "#FF0000";
         this.ctx.beginPath();
-        this.ctx.moveTo(10,60);
-        this.ctx.lineTo(60,10);
+        this.ctx.moveTo(10, 60);
+        this.ctx.lineTo(60, 10);
         this.ctx.stroke();
       }
     }
