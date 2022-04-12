@@ -59,7 +59,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.canvasWidth = Math.floor(screen.availWidth / 1.5);
     this.canvasHeight = Math.floor(screen.availWidth / 3);
 
-    this.ws = new WebSocket('ws://192.168.1.15:8080');
+    this.ws = new WebSocket('ws://153.106.227.120:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
@@ -83,17 +83,17 @@ export class PictionaryComponent implements AfterViewInit {
         this.ready.push(false);
         if (this.gameStarted) {
           this.ws.send("m:artist=" + this.players[this.artist]);
-          //this.ws.send("m:eraser=" + this.players[this.eraser]);
+          this.ws.send("m:eraser=" + this.players[this.eraser]);
           this.ws.send("m:word=" + this.word);
           this.ws.send("m:start");
         }
       }
       if (e.data.split(":").length === 3 && e.data.split(":")[2] === "answered") {
         this.word = this.words[getRandomInt(this.words.length)];
-        this.artist = this.artist + 1 % this.players.length;
-        this.eraser = this.eraser + 1 % this.players.length;
+        this.artist = (this.artist + 1) % this.players.length;
+        this.eraser = (this.eraser + 1) % this.players.length;
         this.ws.send("m:artist=" + this.players[this.artist]);
-        //this.ws.send("m:eraser=" + this.players[this.eraser]);
+        this.ws.send("m:eraser=" + this.players[this.eraser]);
         this.ws.send("m:word=" + this.word);
         this.ws.send("m:start");
       }
@@ -107,7 +107,7 @@ export class PictionaryComponent implements AfterViewInit {
           this.gameStarted = true;
           this.word = this.words[getRandomInt(this.words.length)];
           this.ws.send("m:artist=" + this.players[this.artist]);
-          //this.ws.send("m:eraser=" + this.players[this.eraser]);
+          this.ws.send("m:eraser=" + this.players[this.eraser]);
           this.ws.send("m:word=" + this.word);
           this.ws.send("m:start");
           console.log("Hello there")
@@ -128,26 +128,23 @@ export class PictionaryComponent implements AfterViewInit {
             this.artistCursorY = (y + 10) + "px";
             this.ctx.moveTo(this.artistX, this.artistY);
             this.ctx.strokeStyle = "#000000";
+            this.ctx.lineWidth = 10;
           }
           else {
             this.eraserCursorX = (x + 10) + "px";
             this.eraserCursorY = (y + 10) + "px";
             this.ctx.moveTo(this.eraserX, this.eraserY);
             this.ctx.strokeStyle = "#FFFFFF";
+            this.ctx.lineWidth = 20;
           }
 
           if (e.data.split(":")[3] === "true") {
-            if (this.drawing) {
-              this.ctx.lineTo(x, y);
-            }
-            else {
-              this.drawing = true;
-              this.ctx.moveTo(x, y);
-            }
+            this.ctx.lineTo(x, y);
             this.ctx.stroke();
-          }
-          else {
-            this.drawing = false;
+            // else {
+            //   this.drawing = true;
+            //   this.ctx.moveTo(x, y);
+            // }
           }
 
           if (this.artist === playerNum) {
@@ -183,16 +180,17 @@ export class PictionaryComponent implements AfterViewInit {
       }
 
       if (this.ctx) {
-        this.ctx.moveTo(10, 10);
-        this.ctx.lineTo(60, 60);
-        this.ctx.stroke();
+        //this.ctx.moveTo(10, 10);
+        //this.ctx.lineTo(60, 60);
+        //this.ctx.stroke();
       }
       if (this.ctx) {
         this.ctx.strokeStyle = "#FF0000";
-        this.ctx.beginPath();
-        this.ctx.moveTo(10, 60);
-        this.ctx.lineTo(60, 10);
-        this.ctx.stroke();
+        this.ctx.lineCap = 'round'
+        //this.ctx.beginPath();
+        // this.ctx.moveTo(10, 60);
+        // this.ctx.lineTo(60, 10);
+        //this.ctx.stroke();
       }
     }
   }
