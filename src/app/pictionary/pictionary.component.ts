@@ -102,7 +102,7 @@ export class PictionaryComponent implements AfterViewInit {
 
         this.ready[this.players.indexOf(nickname)] = e.data.split(":")[2].split("=")[1] === "true";
         console.log(this.ready);
-        if (!this.gameStarted && this.ready.every(r => r)) {
+        if (!this.gameStarted && this.players.length >= 2 && this.ready.every(r => r)) {
           console.log("Starting Game");
           this.gameStarted = true;
           this.word = this.words[getRandomInt(this.words.length)];
