@@ -9,9 +9,7 @@
 
     </div>
     <div style="position: absolute; width: 10px; height: 10px; background-color: blue;"
-    [ngStyle]="{'top': eraserCursorY, 'left': eraserCursorX}">
+    [ngStyle]="{'top': eraserCursorY, 'left': eraserCursorX}" *ngIf="players.length >= 2">
 
     </div>
 </div>
-
-<button (click)="sendMessage()">Press Me</button>

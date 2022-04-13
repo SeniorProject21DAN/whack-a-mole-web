@@ -59,7 +59,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.canvasWidth = Math.floor(screen.availWidth / 1.5);
     this.canvasHeight = Math.floor(screen.availWidth / 3);
 
-    this.ws = new WebSocket('ws://153.106.227.120:8080');
+    this.ws = new WebSocket('ws://127.0.0.1:8080');
 
     this.ws.onopen = () => {
       console.log("Test");
@@ -83,31 +83,41 @@ export class PictionaryComponent implements AfterViewInit {
         this.ready.push(false);
         if (this.gameStarted) {
           this.ws.send("m:artist=" + this.players[this.artist]);
-          this.ws.send("m:eraser=" + this.players[this.eraser]);
+          if (this.players.length >= 2) {
+            this.ws.send("m:eraser=" + this.players[this.eraser]);
+          }
           this.ws.send("m:word=" + this.word);
           this.ws.send("m:start");
         }
       }
-      if (e.data.split(":").length === 3 && e.data.split(":")[2] === "answered") {
+      if (e.data.split(":").length === 3 && e.data.split(":")[2] === "answered" && this.ctx && this.canvas) {
         this.word = this.words[getRandomInt(this.words.length)];
+        console.log((this.artist + 1) % this.players.length)
         this.artist = (this.artist + 1) % this.players.length;
+        console.log(this.players);
+        console.log(this.players[this.artist]);
         this.eraser = (this.eraser + 1) % this.players.length;
         this.ws.send("m:artist=" + this.players[this.artist]);
-        this.ws.send("m:eraser=" + this.players[this.eraser]);
+        if (this.players.length >= 2) {
+          this.ws.send("m:eraser=" + this.players[this.eraser]);
+        }
         this.ws.send("m:word=" + this.word);
         this.ws.send("m:start");
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       }
       if (e.data.split(":").length == 3 && e.data.split(":")[2].startsWith("ready")) {
         let nickname = e.data.split(":")[0];
 
         this.ready[this.players.indexOf(nickname)] = e.data.split(":")[2].split("=")[1] === "true";
         console.log(this.ready);
-        if (!this.gameStarted && this.players.length >= 2 && this.ready.every(r => r)) {
+        if (!this.gameStarted && this.ready.every(r => r)) {
           console.log("Starting Game");
           this.gameStarted = true;
           this.word = this.words[getRandomInt(this.words.length)];
           this.ws.send("m:artist=" + this.players[this.artist]);
-          this.ws.send("m:eraser=" + this.players[this.eraser]);
+          if (this.players.length >= 2) {
+            this.ws.send("m:eraser=" + this.players[this.eraser]);
+          }
           this.ws.send("m:word=" + this.word);
           this.ws.send("m:start");
           console.log("Hello there")
