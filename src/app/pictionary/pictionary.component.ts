@@ -59,7 +59,7 @@ export class PictionaryComponent implements AfterViewInit {
     this.canvasWidth = Math.floor(screen.availWidth / 1.5);
     this.canvasHeight = Math.floor(screen.availWidth / 3);
 
-    this.ws = new WebSocket('ws://127.0.0.1:8080');
+    this.ws = new WebSocket('wss://lit-eyrie-58570.herokuapp.com/');
 
     this.ws.onopen = () => {
       console.log("Test");
