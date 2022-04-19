@@ -1,15 +1,17 @@
-<h1>Room Code: {{roomId}}</h1>
+<div style="display: flex; align-items: center; flex-direction: column;">
+    <h1>Room Code: {{roomId}}</h1>
 
-<div style="position: relative;">
-    <canvas id="myCanvas" style="border: 10px solid black;">
+    <div style="position: relative;">
+        <canvas id="myCanvas" style="border: 10px solid black;">
 
-    </canvas>
-    <div style="position: absolute; width: 10px; height: 10px; background-color: red;"
-    [ngStyle]="{'top': artistCursorY, 'left': artistCursorX}">
+        </canvas>
+        <div style="position: absolute; width: 10px; height: 10px; background-color: red;"
+            [ngStyle]="{'top': artistCursorY, 'left': artistCursorX}">
 
-    </div>
-    <div style="position: absolute; width: 10px; height: 10px; background-color: blue;"
-    [ngStyle]="{'top': eraserCursorY, 'left': eraserCursorX}" *ngIf="players.length >= 2">
+        </div>
+        <div style="position: absolute; width: 10px; height: 10px; background-color: blue;"
+            [ngStyle]="{'top': eraserCursorY, 'left': eraserCursorX}" *ngIf="players.length >= 2">
 
+        </div>
     </div>
 </div>
